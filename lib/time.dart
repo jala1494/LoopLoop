@@ -1,3 +1,5 @@
+
+
 class Time {
   int works;
   int rests;
@@ -7,7 +9,7 @@ class Time {
     time.floor().toString().padLeft(2, '0');
   }
 
-  void init(Time x) {
+  void copy(Time x) {
     this.works = x.works;
     this.rests = x.rests;
     this.times = x.times;

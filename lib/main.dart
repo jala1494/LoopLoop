@@ -15,10 +15,3 @@ class TimerApp extends StatelessWidget {
     );
   }
 }
-
-class Time {
-  int work;
-  int rest;
-  int times;
-  Time(this.work, this.rest, this.times);
-}
