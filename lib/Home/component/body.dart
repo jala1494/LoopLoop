@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:looploop/Run/run_screen.dart';
 import 'package:looploop/constant.dart';
 import 'package:looploop/time.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -9,8 +10,34 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  Time init = new Time(45, 15, 4);
-  Time run = new Time(45, 15, 4);
+  Time init = Time(45, 15, 5);
+  Time run = Time(0, 0, 0);
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
+    print('load');
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      init.works = (prefs.getInt('work') ?? 45);
+      init.rests = (prefs.getInt('rest') ?? 15);
+      init.times = (prefs.getInt('times') ?? 5);
+    });
+  }
+
+  _saveData() async {
+    print('saveCounter');
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setInt('work', init.works);
+      prefs.setInt('rest', init.rests);
+      prefs.setInt('times', init.times);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -109,6 +136,7 @@ class _BodyState extends State<Body> {
                 height: MediaQuery.of(context).size.height / 6,
                 child: RaisedButton(
                   onPressed: () {
+                    _saveData();
                     setState(() {
                       run.copy(init);
                     });
@@ -127,7 +155,7 @@ class _BodyState extends State<Body> {
               ),
             )
           ],
-        )
+        ),
       ],
     );
   }

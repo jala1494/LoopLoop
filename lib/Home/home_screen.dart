@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:looploop/time.dart';
 
 import 'component/body.dart';
 
 class HomePage extends StatelessWidget {
+  Time init = new Time(45, 15, 4);
   Size screenSize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -13,6 +15,7 @@ class HomePage extends StatelessWidget {
       resizeToAvoidBottomPadding: false,
       appBar: buildAppBar(),
       body: Body(),
+      
     );
   }
 
