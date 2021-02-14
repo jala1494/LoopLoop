@@ -1,4 +1,17 @@
-
+String toTime(int k) {
+  bool mincheck = (k > 60);
+  bool hourcheck = (k > 3600);
+  String sec = (k % 60).floor().toString().padLeft(2, '0');
+  String min = ((k / 60) % 60).floor().toString().padLeft(2, '0');
+  String hour = (k / 3600).floor().toString().padLeft(2, '0');
+  if (hourcheck) {
+    return '$hour:$min:$sec';
+  }
+  if (mincheck) {
+    return '$min:$sec';
+  }
+  return '$sec';
+}
 
 class Time {
   int works;

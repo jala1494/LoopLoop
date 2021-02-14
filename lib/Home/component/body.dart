@@ -12,7 +12,13 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   Time init = Time(45, 15, 5);
   Time run = Time(0, 0, 0);
+  bool vibe = true;
+  bool sound = true;
   @override
+  void dispose() {
+    super.dispose();
+  }
+
   void initState() {
     super.initState();
     _loadData();
@@ -25,6 +31,8 @@ class _BodyState extends State<Body> {
       init.works = (prefs.getInt('work') ?? 45);
       init.rests = (prefs.getInt('rest') ?? 15);
       init.times = (prefs.getInt('times') ?? 5);
+      sound = (prefs.getBool('sound') ?? true);
+      vibe = (prefs.getBool('vibe') ?? true);
     });
   }
 
@@ -35,6 +43,8 @@ class _BodyState extends State<Body> {
       prefs.setInt('work', init.works);
       prefs.setInt('rest', init.rests);
       prefs.setInt('times', init.times);
+      prefs.setBool('sound', sound);
+      prefs.setBool('vibe', vibe);
     });
   }
 
@@ -49,14 +59,17 @@ class _BodyState extends State<Body> {
                 Expanded(
                     child: Card(
                   cardChild: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('works'),
+                      // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
                           init.works++;
                         });
                       }),
-                      Text(init.works.toString()),
+                      Var(vari: init.works.toString()),
+                      // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
                           init.works--;
@@ -69,14 +82,17 @@ class _BodyState extends State<Body> {
                 Expanded(
                     child: Card(
                   cardChild: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('rests'),
+                      // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
                           init.rests++;
                         });
                       }),
-                      Text(init.rests.toString()),
+                      Var(vari: init.rests.toString()),
+                      // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
                           init.rests--;
@@ -95,16 +111,17 @@ class _BodyState extends State<Body> {
                 child: Card(
               color: kPrimaryColor,
               cardChild: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text('times'),
+                  // ignore: deprecated_member_use
                   RaisedButton(onPressed: () {
                     setState(() {
                       init.times++;
                     });
                   }),
-                  Text(init.times.toString()),
+                  Var(vari: init.times.toString()),
+                  // ignore: deprecated_member_use
                   RaisedButton(onPressed: () {
                     setState(() {
                       init.times--;
@@ -114,15 +131,40 @@ class _BodyState extends State<Body> {
               ),
             )),
             Expanded(
-              child: Card(
-                color: kPrimaryColor,
-                cardChild: Column(
-                  children: [
-                    RaisedButton(
-                      onPressed: () {},
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Card(
+                      color: kPrimaryColor,
+                      cardChild: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            sound = !sound;
+                          });
+                        },
+                        child: Icon(sound ? Icons.volume_up : Icons.volume_off,
+                            size: MediaQuery.of(context).size.height / 10),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    child: Card(
+                      color: kPrimaryColor,
+                      cardChild: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            vibe = !vibe;
+                          });
+                        },
+                        child: Icon(
+                            vibe
+                                ? Icons.vibration
+                                : Icons.phonelink_erase_sharp,
+                            size: MediaQuery.of(context).size.height / 10),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             )
           ],
@@ -134,6 +176,7 @@ class _BodyState extends State<Body> {
               child: SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height / 6,
+                // ignore: deprecated_member_use
                 child: RaisedButton(
                   onPressed: () {
                     _saveData();
@@ -148,7 +191,7 @@ class _BodyState extends State<Body> {
                     'START',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: MediaQuery.of(context).size.height / 8,
+                      fontSize: MediaQuery.of(context).size.height / 10,
                     ),
                   ),
                 ),
@@ -161,6 +204,23 @@ class _BodyState extends State<Body> {
   }
 }
 
+class Var extends StatelessWidget {
+  const Var({
+    Key key,
+    @required this.vari,
+  }) : super(key: key);
+
+  final String vari;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      vari,
+      style: TextStyle(fontSize: MediaQuery.of(context).size.height / 11),
+    );
+  }
+}
+
 class Card extends StatelessWidget {
   Card({this.color, this.cardChild});
   final Widget cardChild;
@@ -168,6 +228,8 @@ class Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: double.maxFinite,
+      width: double.maxFinite,
       child: cardChild,
       margin: EdgeInsets.all(15.0),
       decoration: BoxDecoration(

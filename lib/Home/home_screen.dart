@@ -3,6 +3,7 @@ import 'package:looploop/time.dart';
 
 import 'component/body.dart';
 
+// ignore: must_be_immutable
 class HomePage extends StatelessWidget {
   Time init = new Time(45, 15, 4);
   Size screenSize(BuildContext context) {
@@ -12,10 +13,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: buildAppBar(),
       body: Body(),
-      
     );
   }
 

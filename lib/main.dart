@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Home/home_screen.dart';
 
-void main() => runApp(TimerApp());
+void main() {
+  runApp(TimerApp());
+}
 
 class TimerApp extends StatelessWidget {
   @override
