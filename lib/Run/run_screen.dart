@@ -149,7 +149,7 @@ class _RunState extends State<Run> {
                       width: 20,
                     ),
 
-                    TextButton(
+                    RaisedButton(
                         child: Text('+20s'),
                         onPressed: () {
                           setState(() {
@@ -178,12 +178,12 @@ class _RunState extends State<Run> {
             Text('FINSH'),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: Icon(Icons.replay),
                 onPressed: () {
                   setState(() {
                     _isrunning = true;
-                    widget.run = Time(0, 0, 0);
-                    _startTimer();
+                    widget.run = widget.init;
+                    _unpauseTimer();
                   });
                 },
               ),
