@@ -1,11 +1,13 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
+import 'package:looploop/Home/component/body.dart';
 import 'package:looploop/constant.dart';
 import 'package:looploop/time.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import '../time.dart';
 import 'component/pause_button.dart';
+import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class Run extends StatefulWidget {
@@ -25,7 +27,10 @@ class _RunState extends State<Run> {
   bool start = true;
   bool _isrest = false;
   bool _isrunning = true;
+  bool sound = true;
+  bool vibe = true;
   int s = 0;
+  AudioCache audioCache = AudioCache();
 
   Widget toStr(int a) {
     int k = a ~/ 60;
@@ -67,9 +72,19 @@ class _RunState extends State<Run> {
   }
 
   void initState() {
+    super.initState();
+    _loadData();
     setinit();
     _startTimer();
-    super.initState();
+  }
+
+  _loadData() async {
+    print('load');
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      sound = (prefs.getBool('sound') ?? true);
+      vibe = (prefs.getBool('vibe') ?? true);
+    });
   }
 
   Future setinit() async {
@@ -81,29 +96,28 @@ class _RunState extends State<Run> {
 
   Future _startTimer() async {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (mounted)
+      if (mounted) if (start) {
+        soundvibe(run, init, sound, vibe);
         setState(() {
-          if (start) {
-            if (run.times > 0) {
-              if (run.works > 0) {
-                if (_isrest == true) {
-                  _isrest = false;
-                }
-                run.works--;
-                s++;
+          if (run.times > 0) {
+            if (run.works > 0) {
+              if (_isrest == true) {
+                _isrest = false;
               }
-              if (run.works == 0) {
-                if (run.rests == 0) {
-                  run.times--;
-                  _isrest = false;
-                  run.works = init.works;
-                  run.rests = init.rests;
-                } else {
-                  if (_isrest == false) {
-                    _isrest = true;
-                  }
-                  run.rests--;
+              run.works--;
+              s++;
+            }
+            if (run.works == 0) {
+              if (run.rests == 0) {
+                run.times--;
+                _isrest = false;
+                run.works = init.works;
+                run.rests = init.rests;
+              } else {
+                if (_isrest == false) {
+                  _isrest = true;
                 }
+                run.rests--;
               }
             }
             if (run.times == 1) {
@@ -117,13 +131,29 @@ class _RunState extends State<Run> {
             }
           }
         });
+      }
     });
+  }
+
+  void soundvibe(Time run, Time init, bool sound, bool vibe) {
+    if (sound) {
+      if (run.works == init.works) {
+        audioCache.play('/audio/Start.mp3');
+        if (vibe) HapticFeedback.heavyImpact();
+      }
+      if (run.works == 1 && run.rests == init.rests) {
+        audioCache.play('/audio/End.mp3');
+        if (vibe) HapticFeedback.heavyImpact();
+      }
+      if (run.works == (init.works / 2)) {
+        audioCache.play('/audio/half.mp3');
+        if (vibe) HapticFeedback.mediumImpact();
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    AudioCache audioCache = AudioCache();
-
     Size size = MediaQuery.of(context).size;
     return (_isrunning)
         ? Scaffold(
@@ -226,7 +256,7 @@ class _RunState extends State<Run> {
                           _isrunning = false;
                           run = init;
                         });
-                        audioCache.play('End.mp3');
+
                         Navigator.pop(context);
                       },
                       child: Text('DONE'),
