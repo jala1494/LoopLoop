@@ -61,7 +61,7 @@ class _BodyState extends State<Body> {
                   cardChild: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('works'),
+                      Text('WORK'),
                       // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
@@ -84,7 +84,7 @@ class _BodyState extends State<Body> {
                   cardChild: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('rests'),
+                      Text('REST'),
                       // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
@@ -113,7 +113,7 @@ class _BodyState extends State<Body> {
               cardChild: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('times'),
+                  Text('TIMES'),
                   // ignore: deprecated_member_use
                   RaisedButton(onPressed: () {
                     setState(() {

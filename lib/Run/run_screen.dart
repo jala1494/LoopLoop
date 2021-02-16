@@ -1,9 +1,11 @@
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
-import 'package:looploop/Home/home_screen.dart';
 import 'package:looploop/constant.dart';
 import 'package:looploop/time.dart';
+
 import 'dart:async';
 import '../time.dart';
+import 'component/pause_button.dart';
 
 // ignore: must_be_immutable
 class Run extends StatefulWidget {
@@ -18,7 +20,13 @@ class Run extends StatefulWidget {
 class _RunState extends State<Run> {
   Color screenColor;
   Timer _timer;
+  Time init;
+  Time run;
+  bool start = true;
+  bool _isrest = false;
+  bool _isrunning = true;
   int s = 0;
+
   Widget toStr(int a) {
     int k = a ~/ 60;
     int s = a % 60;
@@ -59,48 +67,50 @@ class _RunState extends State<Run> {
   }
 
   void initState() {
+    setinit();
     _startTimer();
     super.initState();
   }
 
-  bool start = true;
-  bool _isrest = false;
-  // ignore: unused_field
-  bool _isrunning = true;
+  Future setinit() async {
+    setState(() {
+      init = widget.init;
+      run = widget.run;
+    });
+  }
+
   Future _startTimer() async {
-    widget.run.works = widget.init.works;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (mounted)
         setState(() {
           if (start) {
-            if (widget.run.times > 0) {
-              if (widget.run.works > 0) {
+            if (run.times > 0) {
+              if (run.works > 0) {
                 if (_isrest == true) {
                   _isrest = false;
                 }
-                widget.run.works--;
+                run.works--;
                 s++;
               }
-              if (widget.run.works == 0) {
-                if (widget.run.rests == 0) {
-                  widget.run.times--;
+              if (run.works == 0) {
+                if (run.rests == 0) {
+                  run.times--;
                   _isrest = false;
-                  widget.run.works = widget.init.works;
-                  widget.run.rests = widget.init.rests;
+                  run.works = init.works;
+                  run.rests = init.rests;
                 } else {
                   if (_isrest == false) {
                     _isrest = true;
                   }
-                  widget.run.rests--;
+                  run.rests--;
                 }
               }
             }
-            if (widget.run.times == 1) {
-              if (widget.run.works == 0) {
+            if (run.times == 1) {
+              if (run.works == 0) {
                 {
                   start = false;
                   _isrunning = false;
-                  widget.run = Time(0, 0, 0);
                   _timer.cancel();
                 }
               }
@@ -110,11 +120,55 @@ class _RunState extends State<Run> {
     });
   }
 
-  void _unpauseTimer() => _startTimer();
   @override
   Widget build(BuildContext context) {
+    AudioCache audioCache = AudioCache();
+
+    Size size = MediaQuery.of(context).size;
     return (_isrunning)
         ? Scaffold(
+            bottomNavigationBar: SizedBox(
+              height: size.height / 8,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                        child: Text(
+                          '+20s',
+                          style: TextStyle(
+                              fontSize: size.height / 19, color: kwhiteColor),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (_isrest) {
+                              run.rests += 20;
+                            } else {
+                              run.works += 20;
+                            }
+                          });
+                        }),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        iconSize: size.height / 10,
+                        icon: Icon(
+                          Icons.skip_next,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (_isrest) {
+                              run.rests = 0;
+                            } else {
+                              run.works = 0;
+                            }
+                          });
+                        }),
+                  ),
+                  // ignore: deprecated_member_use
+                ],
+              ),
+            ),
             backgroundColor: (_isrest) ? kgreenColor : kblueColor,
             appBar: AppBar(
               centerTitle: true,
@@ -129,71 +183,55 @@ class _RunState extends State<Run> {
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                (_isrest) ? toStr(widget.run.rests) : toStr(widget.run.works),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // ignore: deprecated_member_use
-                    RaisedButton(
-                        child: Icon(Icons.skip_next),
-                        onPressed: () {
-                          setState(() {
-                            if (_isrest) {
-                              widget.run.rests = 0;
-                            } else {
-                              widget.run.works = 0;
-                            }
-                          });
-                        }),
-                    SizedBox(
-                      width: 20,
-                    ),
+                (_isrest) ? toStr(run.rests) : toStr(run.works),
 
-                    RaisedButton(
-                        child: Text('+20s'),
-                        onPressed: () {
-                          setState(() {
-                            if (_isrest) {
-                              widget.run.rests += 20;
-                            } else {
-                              widget.run.works += 20;
-                            }
-                          });
-                        }),
-                    // ignore: deprecated_member_use
-                  ],
-                ),
                 Container(
-                  child: Text(
-                      (widget.init.times - widget.run.times + 1).toString() +
-                          '/' +
-                          widget.init.times.toString()),
-                )
+                  child: Text((init.times - run.times + 1).toString() +
+                      '/' +
+                      init.times.toString()),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // ignore: deprecated_member_use
+                RaisedButton(
+                  color: (start) ? kredColor : kstartColor,
+                  onPressed: () {
+                    setState(() {
+                      start = !start;
+                    });
+                  },
+                  child: PauseButton(
+                    child: (start) ? 'STOP' : 'Start',
+                  ),
+                ),
               ],
             ),
           )
         : Scaffold(
-            body:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text('FINSH'),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              IconButton(
-                icon: Icon(Icons.replay),
-                onPressed: () {
-                  setState(() {
-                    _isrunning = true;
-                    widget.run = widget.init;
-                    _unpauseTimer();
-                  });
-                },
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('DONE'),
-              )
-            ])
-          ]));
+            appBar: AppBar(),
+            body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    toTime(s),
+                    style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.height / 14),
+                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isrunning = false;
+                          run = init;
+                        });
+                        audioCache.play('End.mp3');
+                        Navigator.pop(context);
+                      },
+                      child: Text('DONE'),
+                    )
+                  ])
+                ]));
   }
 }
