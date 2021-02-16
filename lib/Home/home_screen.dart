@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'component/body.dart';
 
 // ignore: must_be_immutable
-class HomePage extends StatelessWidget {
-  Size screenSize(BuildContext context) {
-    return MediaQuery.of(context).size;
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool _isSec = false;
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
-  @override
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isSec = (prefs.getBool('_isSec') ?? false);
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: buildAppBar(),
-      body: Body(),
+      body: Body(_isSec),
     );
   }
 
@@ -21,10 +35,23 @@ class HomePage extends StatelessWidget {
     return AppBar(
       leading: IconButton(
         icon: Icon(
-          Icons.menu,
+          Icons.compare_arrows_sharp,
         ),
-        onPressed: () {},
+        onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          setState(() {
+            _isSec = !_isSec;
+            prefs.setBool('_isSec', _isSec);
+          });
+        },
       ),
+      title: (_isSec) ? Text('Sec') : Text('Min'),
+      actions: [
+        TextButton(
+          child: Text('AD'),
+          onPressed: () {},
+        )
+      ],
     );
   }
 }

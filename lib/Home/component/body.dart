@@ -5,15 +5,19 @@ import 'package:looploop/time.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Body extends StatefulWidget {
+  final bool _isSec;
+  Body(this._isSec);
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
+  Time mininit = Time(1800, 600, 3);
   Time init = Time(45, 15, 5);
   Time run = Time(0, 0, 0);
   bool vibe = true;
   bool sound = true;
+
   @override
   void dispose() {
     super.dispose();
@@ -31,6 +35,10 @@ class _BodyState extends State<Body> {
       init.works = (prefs.getInt('work') ?? 45);
       init.rests = (prefs.getInt('rest') ?? 15);
       init.times = (prefs.getInt('times') ?? 5);
+      mininit.works = (prefs.getInt('workmin') ?? 1800);
+      mininit.rests = (prefs.getInt('restmin') ?? 600);
+      mininit.times = (prefs.getInt('timesmin') ?? 3);
+
       sound = (prefs.getBool('sound') ?? true);
       vibe = (prefs.getBool('vibe') ?? true);
     });
@@ -45,6 +53,9 @@ class _BodyState extends State<Body> {
       prefs.setInt('times', init.times);
       prefs.setBool('sound', sound);
       prefs.setBool('vibe', vibe);
+      prefs.setInt('workmin', mininit.works);
+      prefs.setInt('restmin', mininit.rests);
+      prefs.setInt('timesmin', mininit.times);
     });
   }
 
@@ -65,14 +76,17 @@ class _BodyState extends State<Body> {
                       // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
-                          init.works++;
+                          (widget._isSec) ? init.works++ : mininit.works += 60;
                         });
                       }),
-                      Var(vari: init.works.toString()),
+                      Var(
+                          vari: (widget._isSec)
+                              ? init.works.toString()
+                              : (mininit.works ~/ 60).toString()),
                       // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
-                          init.works--;
+                          (widget._isSec) ? init.works-- : mininit.works -= 60;
                         });
                       }),
                     ],
@@ -88,14 +102,17 @@ class _BodyState extends State<Body> {
                       // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
-                          init.rests++;
+                          (widget._isSec) ? init.rests++ : mininit.rests += 60;
                         });
                       }),
-                      Var(vari: init.rests.toString()),
+                      Var(
+                          vari: (widget._isSec)
+                              ? init.rests.toString()
+                              : (mininit.rests ~/ 60).toString()),
                       // ignore: deprecated_member_use
                       RaisedButton(onPressed: () {
                         setState(() {
-                          init.rests--;
+                          (widget._isSec) ? init.rests-- : mininit.rests -= 60;
                         });
                       }),
                     ],
@@ -117,14 +134,17 @@ class _BodyState extends State<Body> {
                   // ignore: deprecated_member_use
                   RaisedButton(onPressed: () {
                     setState(() {
-                      init.times++;
+                      (widget._isSec) ? init.times++ : mininit.times++;
                     });
                   }),
-                  Var(vari: init.times.toString()),
+                  Var(
+                      vari: (widget._isSec)
+                          ? init.times.toString()
+                          : mininit.times.toString()),
                   // ignore: deprecated_member_use
                   RaisedButton(onPressed: () {
                     setState(() {
-                      init.times--;
+                      (widget._isSec) ? init.times-- : mininit.times--;
                     });
                   }),
                 ],
@@ -181,10 +201,11 @@ class _BodyState extends State<Body> {
                   onPressed: () {
                     _saveData();
                     setState(() {
-                      run.copy(init);
+                      (widget._isSec) ? run.copy(init) : run.copy(mininit);
                     });
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => Run(init, run)));
+                        builder: (context) => Run(run,
+                            (widget._isSec) ? init : mininit, widget._isSec)));
                   },
                   color: Colors.red[900],
                   child: Text(

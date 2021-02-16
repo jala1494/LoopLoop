@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
@@ -10,9 +12,10 @@ import 'component/pause_button.dart';
 
 // ignore: must_be_immutable
 class Run extends StatefulWidget {
-  final Time init;
+  bool _isSec;
   Time run;
-  Run(this.init, this.run);
+  Time init;
+  Run(this.run, this.init, this._isSec);
 
   @override
   _RunState createState() => _RunState();
@@ -86,7 +89,7 @@ class _RunState extends State<Run> {
     });
   }
 
-  Future setinit() async {
+  setinit() async {
     setState(() {
       init = widget.init;
       run = widget.run;
@@ -139,26 +142,28 @@ class _RunState extends State<Run> {
       if (run.works == init.works) {
         audioCache.play('audio/Start.mp3');
       }
-      if (run.works == (init.works / 2).toInt()) {
+      if (run.works == init.works ~/ 2) {
         audioCache.play('audio/half.mp3');
       }
       if (run.works == 1 && run.rests == init.rests) {
         if (sound) audioCache.play('audio/End.mp3');
       }
     }
-    if (vibe) {
-      if (run.works == init.works) {
-        Vibration.vibrate(
-          pattern: [10, 200, 30, 300, 10, 200],
-        );
-      }
-      if (run.works == (init.works / 2).toInt()) {
-        Vibration.vibrate(
-          pattern: [10, 100, 50, 200],
-        );
-      }
-      if (run.works == 1 && run.rests == init.rests) {
-        Vibration.vibrate(pattern: [10, 1000]);
+    if (Platform.isAndroid) {
+      if (vibe) {
+        if (run.works == init.works) {
+          Vibration.vibrate(
+            pattern: [10, 200, 30, 300, 10, 200],
+          );
+        }
+        if (run.works == init.works ~/ 2) {
+          Vibration.vibrate(
+            pattern: [10, 100, 50, 200],
+          );
+        }
+        if (run.works == 1 && run.rests == init.rests) {
+          Vibration.vibrate(pattern: [10, 1000]);
+        }
       }
     }
   }
@@ -176,16 +181,20 @@ class _RunState extends State<Run> {
                   Expanded(
                     child: TextButton(
                         child: Text(
-                          '+20s',
+                          (widget._isSec) ? '+20s' : '+5m',
                           style: TextStyle(
                               fontSize: size.height / 19, color: kwhiteColor),
                         ),
                         onPressed: () {
                           setState(() {
                             if (_isrest) {
-                              run.rests += 20;
+                              (widget._isSec)
+                                  ? run.rests += 20
+                                  : run.rests += 300;
                             } else {
-                              run.works += 20;
+                              (widget._isSec)
+                                  ? run.works += 20
+                                  : run.works += 300;
                             }
                           });
                         }),

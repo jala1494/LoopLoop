@@ -25,9 +25,8 @@ class Time {
     this.times = x.times;
   }
 
-  void reset() {
-    this.works = 45;
-    this.rests = 15;
-    this.times = 5;
+  void minCheck() {
+    this.works = this.works * 60;
+    this.rests = this.rests * 60;
   }
 }
