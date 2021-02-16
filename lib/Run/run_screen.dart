@@ -1,13 +1,12 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
-import 'package:looploop/Home/component/body.dart';
+import 'package:vibration/vibration.dart';
 import 'package:looploop/constant.dart';
 import 'package:looploop/time.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import '../time.dart';
 import 'component/pause_button.dart';
-import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class Run extends StatefulWidget {
@@ -138,16 +137,28 @@ class _RunState extends State<Run> {
   void soundvibe(Time run, Time init, bool sound, bool vibe) {
     if (sound) {
       if (run.works == init.works) {
-        audioCache.play('/audio/Start.mp3');
-        if (vibe) HapticFeedback.heavyImpact();
+        audioCache.play('audio/Start.mp3');
+      }
+      if (run.works == (init.works / 2).toInt()) {
+        audioCache.play('audio/half.mp3');
       }
       if (run.works == 1 && run.rests == init.rests) {
-        audioCache.play('/audio/End.mp3');
-        if (vibe) HapticFeedback.heavyImpact();
+        if (sound) audioCache.play('audio/End.mp3');
       }
-      if (run.works == (init.works / 2)) {
-        audioCache.play('/audio/half.mp3');
-        if (vibe) HapticFeedback.mediumImpact();
+    }
+    if (vibe) {
+      if (run.works == init.works) {
+        Vibration.vibrate(
+          pattern: [10, 200, 30, 300, 10, 200],
+        );
+      }
+      if (run.works == (init.works / 2).toInt()) {
+        Vibration.vibrate(
+          pattern: [10, 100, 50, 200],
+        );
+      }
+      if (run.works == 1 && run.rests == init.rests) {
+        Vibration.vibrate(pattern: [10, 1000]);
       }
     }
   }
