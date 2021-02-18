@@ -2,8 +2,6 @@ PODS:
   - audioplayers (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - integration_test (0.0.1):
-    - Flutter
   - path_provider (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
@@ -14,7 +12,6 @@ PODS:
 DEPENDENCIES:
   - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
   - Flutter (from `Flutter`)
-  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - vibration (from `.symlinks/plugins/vibration/ios`)
@@ -24,8 +21,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audioplayers/ios"
   Flutter:
     :path: Flutter
-  integration_test:
-    :path: ".symlinks/plugins/integration_test/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
@@ -36,7 +31,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  integration_test: 6eb66a19f7104200dcfdd62bc0077e1b09686e4f
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   vibration: b5a33e764c3f609a975b9dca73dce20fdde627dc

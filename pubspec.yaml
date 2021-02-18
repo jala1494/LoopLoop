@@ -37,6 +37,12 @@ dependencies:
   audioplayers: ^0.17.3
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.8.0"
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.looploop.png"
   flutter_test:
     sdk: flutter
   integration_test:
